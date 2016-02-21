@@ -1,0 +1,11 @@
+<module rename-to='marsrover'>
+  <inherits name='playn.Scene'/>
+  <inherits name='MarsRoverAssets'/>
+
+  <source path='core'/>
+  <source path='html'/>
+
+  <public path="resources" />
+
+  <entry-point class='com.angrydevs.marsrover.html.MarsRoverHtml'/>
+</module>
