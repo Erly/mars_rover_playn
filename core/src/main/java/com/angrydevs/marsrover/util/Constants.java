@@ -1,4 +1,4 @@
-package com.angrydevs.marsrover.core.com.angrydevs.marsrove.util;
+package com.angrydevs.marsrover.util;
 
 /**
  * Created by Erlan on 21/02/2016.

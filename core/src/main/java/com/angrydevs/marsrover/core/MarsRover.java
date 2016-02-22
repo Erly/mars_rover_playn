@@ -1,21 +1,24 @@
 package com.angrydevs.marsrover.core;
 
-import com.angrydevs.marsrover.core.com.angrydevs.marsrove.util.Constants;
+import com.angrydevs.marsrover.util.Constants;
+import playn.core.Keyboard;
 import playn.core.Platform;
 import playn.core.Surface;
 import playn.scene.Layer;
 import playn.scene.SceneGame;
 import pythagoras.f.IDimension;
 import react.RList;
+import react.Value;
 
 import java.util.Random;
 
 public class MarsRover extends SceneGame {
 
     public final int mapSize;
-    public final RList<Coord> obstacles = RList.create();
+    public final RList<Coord> obstaclesCoords = RList.create();
     public int numberOfObstacles = 4;
-  /*public final Value<Piece> turn = Value.create(null);*/
+    /*public final Value<Piece> turn = Value.create(null);*/
+    public react.Value<Coord> roverCoords = Value.create(null);
 
     public MarsRover(Platform plat) {
         super(plat, 16); // refresh the game each 16ms (60 times per second)
@@ -35,24 +38,50 @@ public class MarsRover extends SceneGame {
 
         reset();
 
-        /*// create and add background image layer
-        Image bgImage = plat.assets().getImage("images/bg.png");
-        ImageLayer bgLayer = new ImageLayer(bgImage);
-        // scale the background to fill the screen
-        bgLayer.setSize(plat.graphics().viewSize);
-        rootLayer.add(bgLayer);*/
+        plat.input().keyboardEvents.connect(new Keyboard.KeySlot() {
+            @Override public void onEmit (Keyboard.KeyEvent event) {
+                if (event.down) {
+                    Coord oldCord, newCoord = oldCord = roverCoords.get();
+                    switch (event.key) {
+                        case LEFT:
+                            newCoord = new Coord(oldCord.x - 1, oldCord.y);
+                            break;
+                        case UP:
+                            newCoord = new Coord(oldCord.x, oldCord.y - 1);
+                            break;
+                        case RIGHT:
+                            newCoord = new Coord(oldCord.x + 1, oldCord.y);
+                            break;
+                        case DOWN:
+                            newCoord = new Coord(oldCord.x, oldCord.y + 1);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (newCoord != oldCord && !obstaclesCoords.contains(newCoord)) {
+                        roverCoords.update(newCoord);
+                    }
+                }
+            }
+        });
     }
 
     private void reset() {
-        obstacles.clear();
+        obstaclesCoords.clear();
         Random rand = new Random(System.currentTimeMillis());
         int i = 0, x, y;
+
+        x = rand.nextInt(mapSize);
+        y = rand.nextInt(mapSize);
+        Coord rCoords = new Coord(x, y);
+        roverCoords.update(rCoords);
+
         while (i < numberOfObstacles) {
             x = rand.nextInt(mapSize);
             y = rand.nextInt(mapSize);
             Coord coord = new Coord(x, y);
-            if (!obstacles.contains(coord)) {
-                obstacles.add(coord);
+            if (!obstaclesCoords.contains(coord) && rCoords != coord) {
+                obstaclesCoords.add(coord);
                 i++;
             }
         }

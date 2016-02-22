@@ -1,6 +1,6 @@
 package com.angrydevs.marsrover.core;
 
-import com.angrydevs.marsrover.core.com.angrydevs.marsrove.util.Constants;
+import com.angrydevs.marsrover.util.Constants;
 import playn.core.Surface;
 import playn.scene.Layer;
 import pythagoras.f.IDimension;

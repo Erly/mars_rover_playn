@@ -8,6 +8,7 @@ import playn.scene.Layer;
 import pythagoras.f.IDimension;
 import react.RList;
 import react.SignalView;
+import react.Slot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class GameView extends GroupLayer {
     private final GroupLayer obstacleGroup = new GroupLayer();
     private final Map<MarsRover.Coord, ImageLayer> obstacleViews = new HashMap<>();
     final Texture obstacleTex;
+    private Rover rover;
 
     public GameView (MarsRover game, IDimension viewSize) {
         this.game = game;
@@ -37,7 +39,14 @@ public class GameView extends GroupLayer {
             }
         });
 
-        game.obstacles.connect(new RList.Listener<MarsRover.Coord>() {
+        game.roverCoords.connect(new Slot<MarsRover.Coord>() {
+            @Override
+            public void onEmit(MarsRover.Coord coord) {
+                spawnRover(coord);
+            }
+        });
+
+        game.obstaclesCoords.connect(new RList.Listener<MarsRover.Coord>() {
             @Override
             public void onRemove(MarsRover.Coord coord) {
                 clearObstacle(coord);
@@ -67,5 +76,13 @@ public class GameView extends GroupLayer {
     private void clearObstacle(MarsRover.Coord at) {
         ImageLayer obstacleVIew = obstacleViews.remove(at);
         if (obstacleVIew != null) obstacleVIew.close();
+    }
+
+    public void spawnRover(MarsRover.Coord at) {
+        if (rover == null) {
+            rover = new Rover(game.plat, obstacleGroup, mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+        } else {
+            rover.move(mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+        }
     }
 }
