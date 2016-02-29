@@ -10,11 +10,11 @@ import pythagoras.f.IDimension;
  */
 public class MapView extends Layer {
     private static final float LINE_WIDTH = 2;
-    private final MarsRover game;
+    private final MarsRoverGame game;
 
     public final float cellSize;
 
-    public MapView(MarsRover game, IDimension viewSize) {
+    public MapView(MarsRoverGame game, IDimension viewSize) {
         this.game = game;
         float maxBoardSize = Math.min(viewSize.width(), viewSize.height()) - 20;
         this.cellSize = (float)Math.floor(maxBoardSize / game.mapSize);

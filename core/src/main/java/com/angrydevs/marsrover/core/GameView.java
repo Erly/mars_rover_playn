@@ -17,14 +17,14 @@ import java.util.Map;
  * Created by Erlan on 21/02/2016.
  */
 public class GameView extends GroupLayer {
-    private final MarsRover game;
+    private final MarsRoverGame game;
     private final MapView mapView;
     private final GroupLayer obstacleGroup = new GroupLayer();
-    private final Map<MarsRover.Coord, ImageLayer> obstacleViews = new HashMap<>();
+    private final Map<MarsRoverGame.Coord, ImageLayer> obstacleViews = new HashMap<>();
     final Texture obstacleTex;
-    private Rover rover;
+    private MarsRoverView marsRoverView;
 
-    public GameView (MarsRover game, IDimension viewSize) {
+    public GameView (MarsRoverGame game, IDimension viewSize) {
         this.game = game;
         this.mapView = new MapView(game, viewSize);
         addCenterAt(mapView, viewSize.width()/2, viewSize.height()/2);
@@ -39,21 +39,21 @@ public class GameView extends GroupLayer {
             }
         });
 
-        game.roverCoords.connect(new Slot<MarsRover.Coord>() {
+        game.roverCoords.connect(new Slot<MarsRoverGame.Coord>() {
             @Override
-            public void onEmit(MarsRover.Coord coord) {
+            public void onEmit(MarsRoverGame.Coord coord) {
                 spawnRover(coord);
             }
         });
 
-        game.obstaclesCoords.connect(new RList.Listener<MarsRover.Coord>() {
+        game.obstaclesCoords.connect(new RList.Listener<MarsRoverGame.Coord>() {
             @Override
-            public void onRemove(MarsRover.Coord coord) {
+            public void onRemove(MarsRoverGame.Coord coord) {
                 clearObstacle(coord);
             }
 
             @Override
-            public void onAdd(MarsRover.Coord coord) {
+            public void onAdd(MarsRoverGame.Coord coord) {
                 addObstacle(coord);
             }
         });
@@ -66,23 +66,23 @@ public class GameView extends GroupLayer {
         obstacleTex.close();
     }
 
-    private void addObstacle(MarsRover.Coord at) {
+    private void addObstacle(MarsRoverGame.Coord at) {
         ImageLayer obstacleView = new ImageLayer(obstacleTex);
         obstacleView.setOrigin(Layer.Origin.CENTER);
         obstacleGroup.addAt(obstacleView, mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
         obstacleViews.put(at, obstacleView);
     }
 
-    private void clearObstacle(MarsRover.Coord at) {
+    private void clearObstacle(MarsRoverGame.Coord at) {
         ImageLayer obstacleVIew = obstacleViews.remove(at);
         if (obstacleVIew != null) obstacleVIew.close();
     }
 
-    public void spawnRover(MarsRover.Coord at) {
-        if (rover == null) {
-            rover = new Rover(game.plat, obstacleGroup, mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+    public void spawnRover(MarsRoverGame.Coord at) {
+        if (marsRoverView == null) {
+            marsRoverView = new MarsRoverView(game.plat, obstacleGroup, mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
         } else {
-            rover.move(mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+            marsRoverView.move(mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
         }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "sprites": [
+    {"id": "sprite_down", "x": 4, "y": 7, "w": 40, "h": 43},
+    {"id": "sprite_left", "x": 4, "y": 58, "w": 40, "h": 40},
+    {"id": "sprite_right", "x": 3, "y": 106, "w": 40, "h": 40},
+    {"id": "sprite_up", "x": 4, "y": 154, "w": 40, "h": 40}
+  ]
+}

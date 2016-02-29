@@ -12,7 +12,7 @@ import react.Value;
 
 import java.util.Random;
 
-public class MarsRover extends SceneGame {
+public class MarsRoverGame extends SceneGame {
 
     public final int mapSize;
     public final RList<Coord> obstaclesCoords = RList.create();
@@ -20,7 +20,7 @@ public class MarsRover extends SceneGame {
     /*public final Value<Piece> turn = Value.create(null);*/
     public react.Value<Coord> roverCoords = Value.create(null);
 
-    public MarsRover(Platform plat) {
+    public MarsRoverGame(Platform plat) {
         super(plat, 16); // refresh the game each 16ms (60 times per second)
         this.mapSize = 12;
 
