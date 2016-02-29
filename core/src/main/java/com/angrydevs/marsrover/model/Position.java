@@ -6,6 +6,11 @@ package com.angrydevs.marsrover.model;
 public class Position {
     public float x, y;
 
+    public Position(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public void add(Position other) {
         x += other.x;
         y += other.y;

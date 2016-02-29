@@ -19,10 +19,10 @@ public class MarsRoverView {
     private final Sprite sprite;
     private boolean hasLoaded = false; // set to true when resources have loaded and we can update
 
-    public MarsRoverView(Platform plat, final GroupLayer groupLayer, float x, float y) {
+    public MarsRoverView(Platform plat, final GroupLayer groupLayer, Position initialPosition) {
         sprite = SpriteLoader.getSprite(plat, IMAGE, JSON);
         sprite.layer.setOrigin(Layer.Origin.CENTER);
-        sprite.layer.setTranslation(x, y);
+        sprite.layer.setTranslation(initialPosition.x, initialPosition.y);
 
         sprite.state.onSuccess(new Slot<Sprite>() {
             @Override public void onEmit(Sprite sprite) {

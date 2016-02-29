@@ -1,5 +1,7 @@
 package com.angrydevs.marsrover.core;
 
+import com.angrydevs.marsrover.model.Position;
+import com.angrydevs.marsrover.model.Size;
 import playn.core.Image;
 import playn.core.Texture;
 import playn.scene.GroupLayer;
@@ -79,10 +81,11 @@ public class GameView extends GroupLayer {
     }
 
     public void spawnRover(MarsRoverGame.Coord at) {
+        Position position = new Position(mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
         if (marsRoverView == null) {
-            marsRoverView = new MarsRoverView(game.plat, obstacleGroup, mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+            marsRoverView = new MarsRoverView(game.plat, obstacleGroup, position);
         } else {
-            marsRoverView.move(mapView.getCellCenter(at.x), mapView.getCellCenter(at.y));
+            marsRoverView.move(position);
         }
     }
 }

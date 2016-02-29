@@ -2,7 +2,7 @@ package com.angrydevs.marsrover.java;
 
 import playn.java.LWJGLPlatform;
 
-import com.angrydevs.marsrover.core.MarsRover;
+import com.angrydevs.marsrover.core.MarsRoverGame;
 
 public class MarsRoverJava {
 
@@ -10,7 +10,7 @@ public class MarsRoverJava {
     LWJGLPlatform.Config config = new LWJGLPlatform.Config();
     // use config to customize the Java platform, if needed
     LWJGLPlatform plat = new LWJGLPlatform(config);
-    new MarsRover(plat);
+    new MarsRoverGame(plat);
     plat.start();
   }
 }

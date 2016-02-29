@@ -10,7 +10,7 @@ import org.robovm.apple.uikit.UIScreen;
 import org.robovm.apple.uikit.UIWindow;
 
 import playn.robovm.RoboPlatform;
-import com.angrydevs.marsrover.core.MarsRover;
+import com.angrydevs.marsrover.core.MarsRoverGame;
 
 public class MarsRoverRoboVM extends UIApplicationDelegateAdapter {
 
@@ -26,7 +26,7 @@ public class MarsRoverRoboVM extends UIApplicationDelegateAdapter {
     RoboPlatform plat = RoboPlatform.create(window, config);
 
     // create and initialize our game
-    new MarsRover(plat);
+    new MarsRoverGame(plat);
 
     // make our main window visible (this starts the platform)
     window.makeKeyAndVisible();
