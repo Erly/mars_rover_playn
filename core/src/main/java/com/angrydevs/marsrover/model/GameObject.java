@@ -8,9 +8,9 @@ import com.angrydevs.marsrover.util.Constants;
 public abstract class GameObject {
     public Position position;
     private Size size;
-    public Constants.Direction direction;
+    public Constants.Direction direction = Constants.Direction.DOWN;
 
-    public GameObject(Size size) {
+    public GameObject(Position initialPosition, Size size) {
         this.size = size;
     }
 

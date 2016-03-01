@@ -1,5 +1,6 @@
-package com.angrydevs.marsrover.core;
+package com.angrydevs.marsrover.view;
 
+import com.angrydevs.marsrover.core.MarsRoverGame;
 import com.angrydevs.marsrover.util.Constants;
 import playn.core.Surface;
 import playn.scene.Layer;

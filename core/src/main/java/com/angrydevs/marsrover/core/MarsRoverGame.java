@@ -1,6 +1,8 @@
 package com.angrydevs.marsrover.core;
 
 import com.angrydevs.marsrover.util.Constants;
+import com.angrydevs.marsrover.view.GameView;
+import com.angrydevs.marsrover.view.MapView;
 import playn.core.Keyboard;
 import playn.core.Platform;
 import playn.core.Surface;

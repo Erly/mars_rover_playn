@@ -1,7 +1,7 @@
-package com.angrydevs.marsrover.core;
+package com.angrydevs.marsrover.view;
 
+import com.angrydevs.marsrover.core.MarsRoverGame;
 import com.angrydevs.marsrover.model.Position;
-import com.angrydevs.marsrover.model.Size;
 import playn.core.Image;
 import playn.core.Texture;
 import playn.scene.GroupLayer;

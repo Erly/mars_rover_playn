@@ -1,4 +1,4 @@
-package com.angrydevs.marsrover.core;
+package com.angrydevs.marsrover.view;
 
 import com.angrydevs.marsrover.model.Position;
 import com.angrydevs.marsrover.sprites.Sprite;
