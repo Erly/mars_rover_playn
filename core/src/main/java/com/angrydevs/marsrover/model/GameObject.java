@@ -11,6 +11,7 @@ public abstract class GameObject {
     public Constants.Direction direction = Constants.Direction.DOWN;
 
     public GameObject(Position initialPosition, Size size) {
+        this.position = initialPosition;
         this.size = size;
     }
 
