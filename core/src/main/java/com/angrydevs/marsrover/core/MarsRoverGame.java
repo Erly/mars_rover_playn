@@ -1,30 +1,44 @@
 package com.angrydevs.marsrover.core;
 
+import com.angrydevs.marsrover.interfaces.ICommandParser;
+import com.angrydevs.marsrover.model.*;
 import com.angrydevs.marsrover.util.Constants;
 import com.angrydevs.marsrover.view.GameView;
 import com.angrydevs.marsrover.view.MapView;
-import playn.core.Keyboard;
-import playn.core.Platform;
-import playn.core.Surface;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import playn.core.*;
+import playn.scene.ImageLayer;
 import playn.scene.Layer;
 import playn.scene.SceneGame;
 import pythagoras.f.IDimension;
-import react.RList;
+import react.SignalView;
+import react.Slot;
 import react.Value;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MarsRoverGame extends SceneGame {
 
-    public final int mapSize;
-    public final RList<Coord> obstaclesCoords = RList.create();
-    public int numberOfObstacles = 4;
+    public final Font gameFont = new playn.core.Font("Sans serif", Font.Style.PLAIN, 12);
+    public final TextFormat gameTextFormat = new TextFormat(gameFont);
+    public final Map map;
+    public int numberOfObstacles = 12;
     /*public final Value<Piece> turn = Value.create(null);*/
-    public react.Value<Coord> roverCoords = Value.create(null);
 
-    public MarsRoverGame(Platform plat) {
-        super(plat, 16); // refresh the game each 16ms (60 times per second)
-        this.mapSize = 12;
+    private final Injector injector;
+    private final ICommandParser commandParser;
+
+    private Value<String> errorMessage = Value.create(null);
+
+    public MarsRoverGame(final Platform plat) {
+        super(plat, Constants.FrameTime.SIXTY_FPS);
+        injector = Guice.createInjector(new MarsRoverModule());
+        commandParser = injector.getInstance(ICommandParser.class);
+        map = new Map(new Size(25, 20));
 
         final IDimension size = plat.graphics().viewSize;
 
@@ -35,7 +49,7 @@ public class MarsRoverGame extends SceneGame {
             }
         });
 
-        rootLayer.addCenterAt(new MapView(this, size), size.width()/2, size.height()/2);
+        rootLayer.addCenterAt(new MapView(map, size), size.width()/2, size.height()/2);
         rootLayer.add(new GameView(this, size));
 
         reset();
@@ -43,71 +57,94 @@ public class MarsRoverGame extends SceneGame {
         plat.input().keyboardEvents.connect(new Keyboard.KeySlot() {
             @Override public void onEmit (Keyboard.KeyEvent event) {
                 if (event.down) {
-                    Coord oldCord, newCoord = oldCord = roverCoords.get();
                     switch (event.key) {
-                        case LEFT:
-                            newCoord = new Coord(oldCord.x - 1, oldCord.y);
+                        case SPACE:
+                            promptForCommands(plat);
                             break;
-                        case UP:
-                            newCoord = new Coord(oldCord.x, oldCord.y - 1);
+                        case R:
+                            reset();
                             break;
-                        case RIGHT:
-                            newCoord = new Coord(oldCord.x + 1, oldCord.y);
-                            break;
-                        case DOWN:
-                            newCoord = new Coord(oldCord.x, oldCord.y + 1);
+                        case Q:
+                        case ESCAPE:
+                            System.exit(0);
                             break;
                         default:
                             break;
                     }
-                    if (newCoord != oldCord && !obstaclesCoords.contains(newCoord)) {
-                        roverCoords.update(newCoord);
-                    }
                 }
+            }
+        });
+        //promptForCommands(plat);
+
+        errorMessage.connect(new Slot<String>() {
+            @Override
+            public void onEmit(String errorMsg) {
+                if (errorMsg == null) return;
+                TextLayout textLayout = plat.graphics().layoutText(errorMsg, gameTextFormat);
+                Canvas image = plat.graphics().createCanvas(((int)Math.ceil(textLayout.size.width())),
+                        (int)Math.ceil(textLayout.size.height()));
+                image.fillText(textLayout, 0, 0);
+
+                final Layer textLayer = new ImageLayer(image.toTexture());
+                rootLayer.add(textLayer);
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        rootLayer.remove(textLayer);
+                    }
+                }, 5000);
+                errorMessage.update(null);
             }
         });
     }
 
+    private void promptForCommands(Platform plat) {
+        plat.input().getText(Keyboard.TextType.DEFAULT, "Introduce commands for the Mars Rover:", null)
+                .onSuccess(new SignalView.Listener<String>() {
+                    @Override
+                    public void onEmit(String commandsStr) {
+                        ArrayList<Constants.Movement> movements = commandParser.parseCommands(commandsStr);
+                        processMovements(movements);
+                    }
+                });
+    }
+
+    private void processMovements(final ArrayList<Constants.Movement> movements) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Constants.Movement movement : movements) {
+                    try {
+                        map.moveMainCharacter(movement);
+                        Thread.sleep(10 * Constants.FrameTime.SIXTY_FPS);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        errorMessage.update("Can't advance further because an obstacle was encountered.");
+                    }
+                }
+            }
+        }).start();
+    }
+
     private void reset() {
-        obstaclesCoords.clear();
+        map.clear();
         Random rand = new Random(System.currentTimeMillis());
         int i = 0, x, y;
 
-        x = rand.nextInt(mapSize);
-        y = rand.nextInt(mapSize);
-        Coord rCoords = new Coord(x, y);
-        roverCoords.update(rCoords);
+        x = rand.nextInt(map.size.width);
+        y = rand.nextInt(map.size.height);
+        map.setMainCharacter(new MarsRover(), new Position(x, y));
 
         while (i < numberOfObstacles) {
-            x = rand.nextInt(mapSize);
-            y = rand.nextInt(mapSize);
-            Coord coord = new Coord(x, y);
-            if (!obstaclesCoords.contains(coord) && rCoords != coord) {
-                obstaclesCoords.add(coord);
+            x = rand.nextInt(map.size.width);
+            y = rand.nextInt(map.size.height);
+            Position position = new Position(x, y);
+            if (!map.scan(position)) {
+                map.addObstacle(new Rock(position));
                 i++;
             }
         }
-    }
-
-    public static class Coord {
-        public final int x, y;
-
-        public Coord(int x, int y) {
-            assert x >= 0 && y >= 0;
-            this.x = x;
-            this.y = y;
-        }
-
-        public boolean equals (Coord other) {
-            return other.x == x && other.y == y;
-        }
-
-        @Override public boolean equals (Object other) {
-            return (other instanceof Coord) && equals((Coord)other);
-        }
-
-        @Override public int hashCode () { return x ^ y; }
-
-        @Override public String toString () { return "+" + x + "+" + y; }
     }
 }

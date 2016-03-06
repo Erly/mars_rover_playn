@@ -1,30 +1,26 @@
 package com.angrydevs.marsrover.tests;
 
-import com.angrydevs.marsrover.model.Map;
-import com.angrydevs.marsrover.model.Obstacle;
-import com.angrydevs.marsrover.model.Position;
+import com.angrydevs.marsrover.model.*;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created by Erlan on 03/03/2016.
- */
 public class MapTests {
 
-    private static Obstacle obstacle = new Obstacle(new Position(2,3));
+    private Map map = new Map(new Size(10, 10));
+    private Obstacle obstacle = new Rock(new Position(2,3));
 
-    @BeforeClass
-    public static void prepareTestData() {
-        Map.addObstacle(obstacle);
+    @Before
+    public void prepareTestData() {
+        map.addObstacle(obstacle);
     }
 
     @Test
     public void scanForObstaclesShouldReturnFalse() {
-        for (int x = 0; x < Map.size.width; x++) {
-            for (int y = 0; y < Map.size.height; y++) {
-                if (x != obstacle.position.x || y != obstacle.position.y) {
-                    Assert.assertFalse(Map.scan(new Position(x, y)));
+        for (int x = 0; x < map.size.width; x++) {
+            for (int y = 0; y < map.size.height; y++) {
+                if (x != obstacle.getPosition().x || y != obstacle.getPosition().y) {
+                    Assert.assertFalse(map.scan(new Position(x, y)));
                 }
             }
         }
@@ -32,16 +28,16 @@ public class MapTests {
 
     @Test
     public void scanForObstaclesShouldReturnTrue() {
-        Assert.assertFalse(Map.scan(new Position(obstacle.position.x, obstacle.position.y)));
+        Assert.assertTrue(map.scan(new Position(obstacle.getPosition().x, obstacle.getPosition().y)));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void scanForObstaclesShouldThrowIndexOutOfBounds() {
-        Map.scan(new Position(11, 5));
+        map.scan(new Position(11, 5));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void addingAnObstacleWhereThereIsAlreadyOneShouldThrowIllegalArgumentException() {
-        Map.addObstacle(new Obstacle(obstacle.position));
+        map.addObstacle(new Rock(obstacle.getPosition()));
     }
 }

@@ -9,6 +9,11 @@ public class Constants {
         public static final int MARS_RED = 0xffe8784a;
     }
 
+    public static class FrameTime {
+        public static final int THIRTY_FPS = 33;
+        public static final int SIXTY_FPS = 16;
+    }
+
     /*public static class Direction {
         public final int value;
         private Direction(int value) {

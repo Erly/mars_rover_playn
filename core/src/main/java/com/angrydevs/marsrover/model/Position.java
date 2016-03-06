@@ -1,8 +1,5 @@
 package com.angrydevs.marsrover.model;
 
-/**
- * Created by Erlan on 29/02/2016.
- */
 public class Position {
     public float x, y;
 
@@ -19,5 +16,20 @@ public class Position {
     public void multiply(int multiplier) {
         x *= multiplier;
         y *= multiplier;
+    }
+
+    public boolean equals (Position other) {
+        return other.x == x && other.y == y;
+    }
+
+    @Override public boolean equals (Object other) {
+        return (other instanceof Position) && equals((Position) other);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) x;
+        result = 31*result + (int) y;
+        return result;
     }
 }
